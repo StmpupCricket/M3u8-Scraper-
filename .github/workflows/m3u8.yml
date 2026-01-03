@@ -1,0 +1,41 @@
+name: Selenium M3U8 Extractor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"   # runs every 6 hours
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Google Chrome
+        run: |
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+
+      - name: Run Selenium script
+        run: |
+          python m3u8.py
+
+      - name: Commit output JSON
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add m3u8.json
+          git commit -m "Auto update m3u8 list" || exit 0
+          git push
