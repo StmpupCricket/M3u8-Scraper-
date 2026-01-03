@@ -76,7 +76,7 @@ def get_m3u8_urls(page_url: str):
 # Main
 # -----------------------------
 if __name__ == "__main__":
-    TARGET_URL = "https://dilzcreation.pages.dev/?id=ios"
+    TARGET_URL = "https://www.fancode.com/football/tour/a-league-2025-26-19245183/matches/brisbane-roar-vs-wellington-phoenix-138816/live-match-info"
 
     m3u8_links = get_m3u8_urls(TARGET_URL)
 
