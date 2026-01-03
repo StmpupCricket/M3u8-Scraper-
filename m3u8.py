@@ -2,7 +2,6 @@ import time
 import json
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 
 # -----------------------------
@@ -10,7 +9,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 # -----------------------------
 options = webdriver.ChromeOptions()
 
-# Headless + CI safe flags
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
@@ -26,7 +24,7 @@ options.add_argument(
     "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
 )
 
-# ✅ SET performance logging capability (Selenium 4 way)
+# performance logging
 options.set_capability(
     "goog:loggingPrefs",
     {"performance": "ALL"}
@@ -34,10 +32,12 @@ options.set_capability(
 
 
 # -----------------------------
-# Create Chrome driver
+# Use SYSTEM chromedriver
 # -----------------------------
+service = Service("/usr/bin/chromedriver")
+
 driver = webdriver.Chrome(
-    service=Service(ChromeDriverManager().install()),
+    service=service,
     options=options
 )
 
@@ -46,7 +46,6 @@ def get_m3u8_urls(page_url: str):
     print(f"[+] Opening: {page_url}")
     driver.get(page_url)
 
-    # wait for video/network activity
     time.sleep(25)
 
     logs = driver.get_log("performance")
@@ -77,17 +76,15 @@ def get_m3u8_urls(page_url: str):
 # Main
 # -----------------------------
 if __name__ == "__main__":
-    TARGET_URL = "https://dilzcreation.pages.dev/?id=ios"
+    TARGET_URL = "https://fruitlab.com/video/aTUqTrJrMtj6FgO5?ntp=ggm"
 
     m3u8_links = get_m3u8_urls(TARGET_URL)
 
     driver.quit()
 
-    print("\n[+] Found M3U8 URLs:")
     print(json.dumps(m3u8_links, indent=2))
 
-    # Save to JSON
     with open("m3u8.json", "w") as f:
         json.dump(m3u8_links, f, indent=2)
 
-    print("\n[✓] Saved to m3u8.json")
+    print("[✓] Saved m3u8.json")
