@@ -47,7 +47,7 @@ def get_m3u8_urls(url):
     return urls
 
 if __name__ == "__main__":
-    target_url = "https://fruitlab.com/video/aTUqTrJrMtj6FgO5?ntp=ggm"
+    target_url = "https://dilzcreation.pages.dev/?id=ios"
     result = get_m3u8_urls(target_url)
 
     print(json.dumps(result, indent=2))
