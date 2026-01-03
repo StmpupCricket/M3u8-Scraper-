@@ -1,9 +1,13 @@
 name: Selenium M3U8 Extractor
 
 on:
-  workflow_dispatch:   # manual run from Actions tab
+  workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"   # optional: every 6 hours
+    - cron: "0 */6 * * *"
+
+# 🔑 REQUIRED for git push
+permissions:
+  contents: write
 
 jobs:
   extract:
