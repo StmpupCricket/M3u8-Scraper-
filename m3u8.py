@@ -76,7 +76,7 @@ def get_m3u8_urls(page_url: str):
 # Main
 # -----------------------------
 if __name__ == "__main__":
-    TARGET_URL = "https://fruitlab.com/video/aTUqTrJrMtj6FgO5?ntp=ggm"
+    TARGET_URL = "https://dilzcreation.pages.dev/?id=ios"
 
     m3u8_links = get_m3u8_urls(TARGET_URL)
 
