@@ -2,21 +2,15 @@ import time
 import json
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from webdriver_manager.chrome import ChromeDriverManager
 
 
 # -----------------------------
-# Chrome performance logging
-# -----------------------------
-caps = DesiredCapabilities.CHROME
-caps["goog:loggingPrefs"] = {"performance": "ALL"}
-
-
-# -----------------------------
-# Chrome options (GitHub Actions safe)
+# Chrome options (Selenium 4)
 # -----------------------------
 options = webdriver.ChromeOptions()
+
+# Headless + CI safe flags
 options.add_argument("--headless=new")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
@@ -27,18 +21,24 @@ options.add_argument("--remote-debugging-port=9222")
 options.add_argument("--mute-audio")
 options.add_argument("--disable-notifications")
 options.add_argument("--disable-popup-blocking")
+
 options.add_argument(
     "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
 )
 
+# ✅ SET performance logging capability (Selenium 4 way)
+options.set_capability(
+    "goog:loggingPrefs",
+    {"performance": "ALL"}
+)
+
 
 # -----------------------------
-# Create driver
+# Create Chrome driver
 # -----------------------------
 driver = webdriver.Chrome(
     service=Service(ChromeDriverManager().install()),
-    options=options,
-    desired_capabilities=caps
+    options=options
 )
 
 
@@ -46,7 +46,7 @@ def get_m3u8_urls(page_url: str):
     print(f"[+] Opening: {page_url}")
     driver.get(page_url)
 
-    # wait for video & network requests
+    # wait for video/network activity
     time.sleep(25)
 
     logs = driver.get_log("performance")
@@ -60,12 +60,8 @@ def get_m3u8_urls(page_url: str):
                 continue
 
             params = msg.get("params", {})
-
-            # check request URL
-            if "request" in params:
-                url = params["request"].get("url", "")
-            else:
-                continue
+            request = params.get("request", {})
+            url = request.get("url", "")
 
             if ".m3u8" in url and "blob:" not in url:
                 if url not in found:
@@ -90,7 +86,7 @@ if __name__ == "__main__":
     print("\n[+] Found M3U8 URLs:")
     print(json.dumps(m3u8_links, indent=2))
 
-    # save result
+    # Save to JSON
     with open("m3u8.json", "w") as f:
         json.dump(m3u8_links, f, indent=2)
 
